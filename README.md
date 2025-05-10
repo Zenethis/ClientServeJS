@@ -29,3 +29,5 @@ Include the library in your HTML:
 
 ```html
 <script src="clientserve.js"></script>
+```
+[**Documentation**](https://client-serve-js.vercel.app/documentation.html)

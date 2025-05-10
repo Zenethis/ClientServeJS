@@ -1,7 +1,3 @@
-from pathlib import Path
-
-# Define the markdown content
-markdown_content = """# ClientServeJS
 
 **ClientServeJS** is a lightweight client-side file serving library designed to deliver complete web applications directly from the browser—no backend or hosting server required. It supports service workers, Blob URLs, and offers compatibility with ZIP and CSJ archive formats.
 
@@ -33,4 +29,3 @@ Include the library in your HTML:
 
 ```html
 <script src="clientserve.js"></script>
-```html

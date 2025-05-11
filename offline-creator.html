@@ -1,0 +1,178 @@
+<!--
+This is a work in progress. The offline creator is not yet fully functional.
+  -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClientServeJS Offline Creator</title>
+  <link rel="stylesheet" href="assets/styles/offline-creator.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>ClientServeJS Offline Creator</h1>
+      <div class="subtitle">Create standalone HTML files from CSJ archives that work offline</div>
+    </header>
+
+    <div id="alert" class="alert hidden"></div>
+
+    <div class="step-indicator">
+      <div class="step active" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-title">Upload CSJ</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-title">Configure</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-title">Customize</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-number">4</div>
+        <div class="step-title">Generate</div>
+      </div>
+    </div>
+
+    <div class="card" id="step-1">
+      <div class="card-title">Step 1: Upload CSJ File</div>
+      
+      <div class="file-upload" id="file-drop-area">
+        <div class="file-upload-icon">📁</div>
+        <div>Drag and drop your CSJ file here or <strong>click to browse</strong></div>
+        <input type="file" id="csj-file" accept=".csj" style="display: none;">
+      </div>
+      
+      <div class="file-info hidden" id="file-info">
+        <strong>Selected file:</strong> <span id="file-name"></span>
+        <div id="file-size"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="csj-password">CSJ Password (if encrypted)</label>
+        <input type="password" id="csj-password" placeholder="Leave empty for default password">
+        <div class="file-info">Default password is "clientserve" if you didn't specify one when creating the CSJ file.</div>
+      </div>
+      
+      <div class="button-group">
+        <button id="next-step-1" class="button" disabled>Next</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="step-2">
+      <div class="card-title">Step 2: Configure Offline Settings</div>
+      
+      <div class="form-group">
+        <label for="app-title">Application Title</label>
+        <input type="text" id="app-title" placeholder="My Offline App">
+      </div>
+      
+      <div class="form-group">
+        <label for="start-file">Start File</label>
+        <input type="text" id="start-file" value="index.html" placeholder="index.html">
+        <div class="file-info">The main HTML file that will be loaded when the offline app starts.</div>
+      </div>
+      
+      <div class="form-group">
+        <label>Content Serving Method</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="serving-method" value="service-worker" checked>
+            Service Worker (requires HTTPS or localhost)
+          </label>
+          <div class="file-info">Uses a service worker to serve files. Requires HTTPS or localhost connection.</div>
+          
+          <label class="radio-label">
+            <input type="radio" name="serving-method" value="data-url">
+            Data URLs (works on local files)
+          </label>
+          <div class="file-info">Uses data URLs to embed content directly. Works with local file:// URLs but may be slower for large files.</div>
+        </div>
+      </div>
+      
+      <div class="form-group" id="service-worker-url-container">
+        <label for="service-worker-url">Remote Service Worker URL</label>
+        <input type="url" id="service-worker-url" placeholder="https://example.com/clientserve.js">
+        <div class="file-info">URL to the ClientServeJS library. This is required for service worker mode since service workers cannot work with file:// URLs.</div>
+      </div>
+      
+      <div class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="encrypt-csj" checked>
+          Encrypt CSJ data in the offline file
+        </label>
+        <div class="file-info">Recommended to protect your code and assets.</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="encryption-password">Encryption Password</label>
+        <input type="password" id="encryption-password" placeholder="Leave empty for default password">
+        <div class="file-info">Password used to encrypt the CSJ data in the offline file.</div>
+      </div>
+      
+      <div class="button-group">
+        <button id="prev-step-2" class="button button-secondary">Previous</button>
+        <button id="next-step-2" class="button">Next</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="step-3">
+      <div class="card-title">Step 3: Advanced Customization</div>
+      
+      <div class="tabs">
+        <div class="tab active" data-tab="css">Custom CSS</div>
+        <div class="tab" data-tab="js">Custom JavaScript</div>
+      </div>
+      
+      <div class="tab-content active" id="tab-css">
+        <div class="form-group">
+          <label for="custom-css">Custom CSS</label>
+          <textarea id="custom-css" placeholder="/* Add your custom CSS here */"></textarea>
+          <div class="file-info">This CSS will be added to the offline HTML file.</div>
+        </div>
+      </div>
+      
+      <div class="tab-content" id="tab-js">
+        <div class="form-group">
+          <label for="custom-js">Custom JavaScript</label>
+          <textarea id="custom-js" placeholder="// Add your custom JavaScript here"></textarea>
+          <div class="file-info">This JavaScript will be executed in the offline HTML file.</div>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button id="prev-step-3" class="button button-secondary">Previous</button>
+        <button id="next-step-3" class="button">Next</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="step-4">
+      <div class="card-title">Step 4: Generate Offline File</div>
+      
+      <div class="form-group">
+        <p>Your offline HTML file is ready to be generated. Click the button below to create and download your standalone HTML file.</p>
+        <p>This file will work without a server and can be shared with others. Just open it in a browser to run your application.</p>
+      </div>
+      
+      <div id="progress-container" class="progress-container hidden">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      
+      <div class="button-group">
+        <button id="prev-step-4" class="button button-secondary">Previous</button>
+        <button id="generate-button" class="button">Generate & Download</button>
+        <button id="reset-button" class="button button-secondary">Start Over</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="clientserve.js"></script>
+  <script src="assets/js/offline-creator.js"></script>
+</body>
+</html>

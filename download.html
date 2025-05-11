@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClientServeJS Download</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --primary-dark: #388E3C;
+      --primary-light: #A5D6A7;
+      --secondary-color: #2196F3;
+      --secondary-dark: #1976D2;
+      --secondary-light: #BBDEFB;
+      --text-color: #333;
+      --text-light: #757575;
+      --background-color: #f5f5f5;
+      --card-color: #fff;
+      --border-color: #ddd;
+      --code-background: #f8f8f8;
+      --code-border: #e0e0e0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--background-color);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background-color: var(--primary-dark);
+      color: white;
+      padding: 20px 0;
+      margin-bottom: 30px;
+    }
+
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    header .version {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    nav {
+      background-color: var(--card-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+      position: sticky;
+      top: 20px;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    nav li {
+      margin: 0;
+    }
+
+    nav a {
+      display: block;
+      padding: 15px 20px;
+      color: var(--text-color);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    nav a:hover {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    nav a.active {
+      border-bottom-color: var(--primary-color);
+      color: var(--primary-dark);
+      font-weight: bold;
+    }
+
+    main {
+      background-color: var(--card-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    h2 {
+      color: var(--primary-dark);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      color: var(--primary-dark);
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    code {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: var(--code-background);
+      padding: 2px 5px;
+      border-radius: 3px;
+      border: 1px solid var(--code-border);
+      font-size: 0.9em;
+    }
+
+    pre {
+      background-color: var(--code-background);
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid var(--code-border);
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    pre code {
+      border: none;
+      padding: 0;
+      background-color: transparent;
+    }
+
+    .note {
+      background-color: var(--secondary-light);
+      border-left: 4px solid var(--secondary-color);
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 0 5px 5px 0;
+    }
+
+    .new-feature {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 0.8em;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+      color: var(--text-light);
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      header .container {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      header .version {
+        margin-top: 10px;
+      }
+      
+      nav ul {
+        flex-direction: column;
+      }
+      
+      nav a {
+        border-bottom: 1px solid var(--border-color);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>ClientServeJS <span class="new-feature">v0.1</span></h1>
+      <span class="version">Latest Release: May 10, 2025</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <nav>
+      <ul>
+        <li><a href="#download" class="active">Download</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section id="download">
+        <h2>Download</h2>
+        <p>Choose your preferred distribution:</p>
+        <ul>
+          <li><a href="/releases/ClientServeJS-v0.1.zip" download>Download Latest</a></li>
+        </ul>
+    </section>
+
+      <section id="changelog">
+        <h2>Changelog</h2>
+        <table>
+          <thead>
+            <tr><th>Version</th><th>Date</th><th>Highlights</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0.1</td><td>May 20, 2025</td><td>Initial Release</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer>
+      &copy; 2025 Zenethis. All rights reserved.
+    </footer>
+  </div>
+</body>
+</html>

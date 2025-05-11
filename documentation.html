@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClientServeJS Documentation</title>
+  <link rel="stylesheet" href="assets/styles/documentation.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>ClientServeJS</h1>
+      <div class="version">Version 0.1</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <nav>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#basic-usage">Basic Usage</a></li>
+        <li><a href="#options">Options</a></li>
+        <li><a href="#pwa-support">PWA Support</a></li>
+        <li><a href="#offline-support">Offline Support</a></li>
+        <li><a href="#unity-support">Unity Support</a></li>
+        <li><a href="#api-reference">API Reference</a></li>
+        <li><a href="#examples">Examples</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section id="introduction">
+        <h2>Introduction</h2>
+        <p>ClientServeJS is a client-side file serving library that allows you to serve files directly from the browser without requiring a server. It's perfect for distributing web applications, games, and other content that can run entirely in the browser.</p>
+        
+        <p>Key features include:</p>
+        <ul>
+          <li>Service worker-based file serving</li>
+          <li>Blob URL mode for browsers without service worker support</li>
+          <li>Support for various archive formats (ZIP, CSJ)</li>
+          <li>Unity WebGL game support</li>
+          <li>Progressive Web App (PWA) support <span class="new-feature">New</span></li>
+          <li>Offline HTML file generation <span class="new-feature">New</span></li>
+          <li>IndexedDB file persistence</li>
+        </ul>
+      </section>
+
+      <section id="installation">
+        <h2>Installation</h2>
+        <p>To use ClientServeJS, simply include the script in your HTML file:</p>
+        
+        <pre><code>&lt;script src="clientserve.js"&gt;&lt;/script&gt;</code></pre>
+        
+        <p>The library is designed to function both as the main library and as a service worker. It detects its execution context and behaves accordingly.</p>
+      </section>
+
+      <section id="basic-usage">
+        <h2>Basic Usage</h2>
+        
+        <h3>Loading and Serving Files</h3>
+        <pre><code>// Initialize ClientServe
+const clientServe = new ClientServe({
+  path: '/app',
+  debug: true
+});
+
+// Load files from a URL
+clientServe.loadFromUrl('https://example.com/myapp.csj', 'csj')
+  .then(() => {
+    // Launch the application
+    clientServe.launch('index.html');
+  })
+  .catch(error => {
+    console.error('Error loading files:', error);
+  });</code></pre>
+        
+        <h3>Creating a CSJ Archive</h3>
+        <p>CSJ (ClientServeJS) is a custom archive format optimized for web applications. You can create a CSJ file programmatically:</p>
+        
+        <pre><code>// Create a CSJ archive
+const files = {
+  'index.html': {
+    content: '&lt;html&gt;&lt;body&gt;Hello World&lt;/body&gt;&lt;/html&gt;',
+    isBinary: false,
+    type: 'text/html'
+  },
+  'image.png': {
+    content: imageUint8Array,
+    isBinary: true,
+    type: 'image/png'
+  }
+};
+
+const metadata = {
+  title: 'My App',
+  author: 'Your Name'
+};
+
+// Create and download the CSJ file
+CSJFormat.createCSJ(files, metadata, 'mypassword')
+  .then(csjData => {
+    const blob = new Blob([csjData], { type: 'application/x-clientserve-archive' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'myapp.csj';
+    a.click();
+  });</code></pre>
+      </section>
+
+      <section id="options">
+        <h2>Options</h2>
+        <p>ClientServeJS supports various options to customize its behavior:</p>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>path</td>
+              <td>string</td>
+              <td>'/app'</td>
+              <td>The virtual path where files will be served from</td>
+            </tr>
+            <tr>
+              <td>showLoadingBar</td>
+              <td>boolean</td>
+              <td>true</td>
+              <td>Whether to show a loading bar during file loading</td>
+            </tr>
+            <tr>
+              <td>launchMethod</td>
+              <td>string</td>
+              <td>'same-tab'</td>
+              <td>How to launch the application ('same-tab', 'new-tab', 'popup')</td>
+            </tr>
+            <tr>
+              <td>debug</td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Enable debug logging</td>
+            </tr>
+            <tr>
+              <td>fallbackMode</td>
+              <td>boolean</td>
+              <td>true</td>
+              <td>Whether to fall back to blob URLs if service workers are not supported</td>
+            </tr>
+            <tr>
+              <td>blobMode</td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Force using blob URLs instead of service workers</td>
+            </tr>
+            <tr>
+              <td>unitySupport</td>
+              <td>boolean</td>
+              <td>true</td>
+              <td>Enable Unity WebGL game support</td>
+            </tr>
+            <tr>
+              <td>persistFiles</td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Store files in IndexedDB for persistence</td>
+            </tr>
+            <tr>
+              <td>csjPassword</td>
+              <td>string</td>
+              <td>'clientserve'</td>
+              <td>Default password for CSJ encryption/decryption</td>
+            </tr>
+            <tr>
+              <td>enablePWA</td>
+              <td>boolean</td>
+              <td>true</td>
+              <td>Enable Progressive Web App support <span class="new-feature">New</span></td>
+            </tr>
+            <tr>
+              <td>offlineSupport</td>
+              <td>boolean</td>
+              <td>true</td>
+              <td>Enable offline support <span class="new-feature">New</span></td>
+            </tr>
+            <tr>
+              <td>cacheFiles</td>
+              <td>boolean</td>
+              <td>true</td>
+              <td>Cache files for offline access <span class="new-feature">New</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="pwa-support">
+        <h2>PWA Support <span class="new-feature">New</span></h2>
+        <p>ClientServeJS now supports Progressive Web Apps (PWAs), allowing your applications to be installed on devices and work offline.</p>
+        
+        <h3>Requirements</h3>
+        <ul>
+          <li>A valid <code>manifest.json</code> file in your application</li>
+          <li>Service worker mode enabled (not blob mode)</li>
+          <li>HTTPS connection (required for service workers)</li>
+        </ul>
+        
+        <h3>Manifest.json Example</h3>
+        <pre><code>{
+  "name": "My PWA App",
+  "short_name": "MyApp",
+  "description": "A Progressive Web App example",
+  "start_url": "/app/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}</code></pre>
+        
+        <h3>Enabling PWA Support</h3>
+        <pre><code>const clientServe = new ClientServe({
+  path: '/app',
+  enablePWA: true,
+  offlineSupport: true,
+  cacheFiles: true
+});</code></pre>
+        
+        <div class="note">
+          <strong>Note:</strong> When a manifest.json file is detected in your application, ClientServeJS will automatically set up the necessary links and meta tags for PWA support.
+        </div>
+      </section>
+
+      <section id="offline-support">
+        <h2>Offline Support <span class="new-feature">New</span></h2>
+        <p>ClientServeJS now provides two ways to enable offline support:</p>
+        
+        <h3>1. Service Worker Caching</h3>
+        <p>When using service worker mode with <code>cacheFiles: true</code>, files are automatically cached for offline access.</p>
+        
+        <h3>2. Standalone Offline HTML Files</h3>
+        <p>You can generate standalone HTML files that work without a server using the new Offline Creator tool or the API:</p>
+        
+        <pre><code>// Generate an offline HTML file
+const options = {
+  title: 'My Offline App',
+  startFile: 'index.html',
+  remoteServiceWorkerUrl: 'https://example.com/clientserve.js',
+  password: 'mypassword',
+  customCss: '.my-custom-style { color: red; }',
+  customJs: 'console.log("Custom script loaded");'
+};
+
+clientServe.createOfflineHtml(options)
+  .then(blob => {
+    // Download the offline HTML file
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'my-offline-app.html';
+    a.click();
+  });</code></pre>
+        
+        <h3>Using the Offline Creator Tool</h3>
+        <p>The Offline Creator tool (<code>offline-creator.html</code>) provides a user-friendly interface for creating offline HTML files from CSJ archives.</p>
+        
+        <div class="warning">
+          <strong>Important:</strong> Offline HTML files using service workers require a HTTPS connection to function correctly, as service workers cannot work with <code>file://</code> URLs. The offline HTML file will connect to the specified remote service worker URL to enable full functionality.
+        </div>
+      </section>
+
+      <section id="unity-support">
+        <h2>Unity Support</h2>
+        <p>ClientServeJS provides special support for Unity WebGL games, handling the unique requirements of Unity's file structure and loading process.</p>
+        
+        <h3>Unity Blob Mode (Beta)</h3>
+        <p>The new Unity Blob Mode allows Unity games to run in blob URL mode without requiring a service worker:</p>
+        
+        <pre><code>const clientServe = new ClientServe({
+  path: '/app',
+  blobMode: true,
+  unityBlobMode: true
+});</code></pre>
+        
+        <div class="note">
+          <strong>Note:</strong> Unity Blob Mode is still in beta and may not work with all Unity games. If you encounter issues, you can enable <code>unityBlobFallback: true</code> to automatically switch to service worker mode when Unity files are detected.
+        </div>
+      </section>
+
+      <section id="api-reference">
+        <h2>API Reference</h2>
+        
+        <h3>ClientServe Class</h3>
+        <p>The main class for loading and serving files.</p>
+        
+        <h4>Methods</h4>
+        <ul>
+          <li><code>loadFromUrl(url, type)</code> - Load files from a URL (type can be 'zip', 'csj', etc.)</li>
+          <li><code>launch(startFile)</code> - Launch the application with the specified start file</li>
+          <li><code>loadFromStorage(path)</code> - Load files from IndexedDB storage</li>
+          <li><code>deleteFromStorage(path)</code> - Delete files from IndexedDB storage</li>
+          <li><code>listStoredPaths()</code> - List all stored paths in IndexedDB</li>
+          <li><code>createOfflineHtml(options)</code> - Create a standalone offline HTML file <span class="new-feature">New</span></li>
+          <li><code>dispose()</code> - Clean up resources</li>
+        </ul>
+        
+        <h3>CSJFormat Class</h3>
+        <p>Utilities for working with CSJ archives.</p>
+        
+        <h4>Methods</h4>
+        <ul>
+          <li><code>createCSJ(files, metadata, password)</code> - Create a CSJ archive</li>
+          <li><code>decrypt(data, password)</code> - Decrypt a CSJ archive</li>
+          <li><code>encrypt(data, password)</code> - Encrypt data using the CSJ format</li>
+          <li><code>toBase64(data)</code> - Convert CSJ data to Base64 <span class="new-feature">New</span></li>
+          <li><code>fromBase64(base64)</code> - Convert Base64 to CSJ data <span class="new-feature">New</span></li>
+        </ul>
+      </section>
+
+      <section id="examples">
+        <h2>Examples</h2>
+        
+        <h3>Basic Example</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;ClientServeJS Example&lt;/title&gt;
+  &lt;script src="clientserve.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;ClientServeJS Example&lt;/h1&gt;
+  &lt;button id="load-button"&gt;Load Application&lt;/button&gt;
+
+  &lt;script&gt;
+    document.getElementById('load-button').addEventListener('click', function() {
+      const clientServe = new ClientServe({
+        path: '/app',
+        debug: true,
+        showLoadingBar: true
+      });
+
+      clientServe.loadFromUrl('app.csj', 'csj')
+        .then(() => {
+          clientServe.launch('index.html');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        
+        <h3>PWA Example <span class="new-feature">New</span></h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;ClientServeJS PWA Example&lt;/title&gt;
+  &lt;script src="clientserve.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;ClientServeJS PWA Example&lt;/h1&gt;
+  &lt;button id="load-button"&gt;Load PWA&lt;/button&gt;
+
+  &lt;script&gt;
+    document.getElementById('load-button').addEventListener('click', function() {
+      const clientServe = new ClientServe({
+        path: '/app',
+        debug: true,
+        enablePWA: true,
+        offlineSupport: true,
+        cacheFiles: true
+      });
+
+      clientServe.loadFromUrl('pwa-app.csj', 'csj')
+        .then(() => {
+          clientServe.launch('index.html');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        
+        <h3>Offline HTML Generation Example <span class="new-feature">New</span></h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;ClientServeJS Offline Generator Example&lt;/title&gt;
+  &lt;script src="clientserve.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Generate Offline HTML&lt;/h1&gt;
+  &lt;input type="file" id="csj-file" accept=".csj"&gt;
+  &lt;button id="generate-button" disabled&gt;Generate Offline HTML&lt;/button&gt;
+
+  &lt;script&gt;
+    const fileInput = document.getElementById('csj-file');
+    const generateButton = document.getElementById('generate-button');
+    let csjFile = null;
+
+    fileInput.addEventListener('change', function(event) {
+      if (event.target.files.length > 0) {
+        csjFile = event.target.files[0];
+        generateButton.disabled = false;
+      }
+    });
+
+    generateButton.addEventListener('click', async function() {
+      if (!csjFile) return;
+
+      try {
+        // Read the CSJ file
+        const buffer = await csjFile.arrayBuffer();
+        
+        // Create a ClientServe instance
+        const clientServe = new ClientServe({
+          debug: true,
+          blobMode: true
+        });
+        
+        // Extract the CSJ file
+        const csjData = await CSJFormat.decrypt(new Uint8Array(buffer), 'clientserve');
+        clientServe.files = csjData.files;
+        
+        // Generate the offline HTML file
+        const options = {
+          title: 'My Offline App',
+          startFile: 'index.html',
+          remoteServiceWorkerUrl: window.location.origin + '/clientserve.js'
+        };
+        
+        const offlineBlob = await clientServe.createOfflineHtml(options);
+        
+        // Download the offline HTML file
+        const url = URL.createObjectURL(offlineBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'offline-app.html';
+        a.click();
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+      }
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </section>
+    </main>
+
+    <footer>
+      <p>ClientServeJS v0.1 | Documentation last updated: May 2025</p>
+      <p>&copy; 2025 Zenethis. All rights reserved.</p>
+    </footer>
+  </div>
+</body>
+</html>

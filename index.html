@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClientServeJS Example</title>
+    <script src="clientserve.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="assets/styles/index.css">
+</head>
+<body>
+    <header>
+        <h1>ClientServeJS Example</h1>
+        <p>Load and serve files from ZIP archives directly in the browser</p>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title">Load Archive</h2>
+            
+            <div class="note">
+                <p>This example demonstrates how to use ClientServeJS to load and serve files from a ZIP archive.</p>
+                <p>You can either upload your own ZIP file or use one of the demo files.</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="load-archive">Load Archive</div>
+                <div class="tab" data-tab="stored-files">Stored Files</div>
+                <div class="tab" data-tab="settings">Settings</div>
+            </div>
+            
+            <div class="tab-content active" id="load-archive">
+                <div class="form-group">
+                    <label for="archive-type">Archive Type</label>
+                    <select id="archive-type">
+                        <option value="zip">ZIP</option>
+                        <option value="csj">CSJ (ClientServeJS Archive)</option>
+                        <option value="tar" disabled>TAR (Coming Soon)</option>
+                        <option value="gz" disabled>GZ (Coming Soon)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="archive-file">Archive File</label>
+                    <div class="file-input-container">
+                        <div class="file-input-button">Choose File</div>
+                        <input type="file" id="archive-file" accept=".zip,.csj">
+                    </div>
+                    <div class="file-name" id="file-name">No file chosen</div>
+                </div>
+                
+                <div id="csj-options" style="display: none;">
+                    <div class="form-group">
+                        <label for="csj-password">CSJ Password (optional)</label>
+                        <input type="password" id="csj-password" placeholder="Leave blank for default password">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="serve-path">Serve Path</label>
+                    <input type="text" id="serve-path" value="/app" placeholder="e.g., /app">
+                </div>
+                
+                <div class="form-group">
+                    <label for="launch-method">Launch Method</label>
+                    <select id="launch-method">
+                        <option value="same-tab">Same Tab</option>
+                        <option value="new-tab">New Tab</option>
+                        <option value="popup">Popup Window</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="persist-files" checked>
+                        Persist Files (store in browser for future use)
+                    </label>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="stored-files">
+                <div class="form-group">
+                    <label>Stored Archives</label>
+                    <div class="stored-files" id="stored-files-list">
+                        <div class="note">Loading stored files...</div>
+                    </div>
+                </div>
+                
+                <button id="refresh-stored-files">Refresh List</button>
+            </div>
+            
+            <div class="tab-content" id="settings">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="show-loading-bar" checked>
+                        Show Loading Bar
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="fallback-mode" checked>
+                        Enable Fallback Mode (if Service Worker fails)
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="unity-support" checked>
+                        Enable Unity Support
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="blob-mode">
+                        Use Blob Mode (instead of Service Worker)
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="unity-blob-fallback" checked>
+                        Unity Blob Fallback (use Service Worker for Unity in Blob Mode)
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="unity-blob-mode">
+                        Enable Unity Blob Mode (BETA) - Experimental support for Unity in blob mode
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="debug-mode">
+                        Enable Debug Mode
+                    </label>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="status" id="status">Ready to load archive</div>
+            <div class="error" id="error"></div>
+            
+            <button id="load-button">Load Archive</button>
+            <button id="launch-button" disabled>Launch</button>
+            
+            <div id="debug-panel" style="display: none; margin-top: 20px; border: 1px solid #ddd; padding: 10px; border-radius: 4px; background-color: #f9f9f9;">
+                <h3 style="margin-top: 0;">Debug Information</h3>
+                <div class="form-group">
+                    <label for="file-list">Files in Archive:</label>
+                    <select id="file-list" style="height: 100px; overflow-y: auto;" multiple></select>
+                </div>
+                <div class="form-group">
+                    <label for="start-file">Custom Start File:</label>
+                    <input type="text" id="start-file" placeholder="e.g., index.html">
+                </div>
+                <button id="launch-custom" disabled>Launch Custom File</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title">Create Test ZIP</h2>
+            <p>Don't have a ZIP file to test with? Create one here with sample HTML, CSS, and JavaScript files.</p>
+            <button id="create-zip-button">Create Test ZIP</button>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title">CSJ Creator</h2>
+            <p>Create encrypted CSJ archives for secure distribution of your web applications.</p>
+            <p>CSJ files provide better security for your content compared to regular ZIP files.</p>
+            <a href="csj-creator.html" target="_blank"><button>Open CSJ Creator</button></a>
+        </div>
+                <div class="card">
+            <h2 class="card-title">Documentation</h2>
+            <p>Learn how to use ClientServeJS in your own projects.</p>
+            <a href="documentation.html" target="_blank"><button>Open Documentation</button></a>
+        </div>
+        <div class="card">
+            <h2 class="card-title">Download</h2>
+            <p>Download ClientServeJS for your own projects.</p>
+            <a href="download.html" target="_blank"><button>Open Download Page</button></a>
+        </div>
+    </div>
+    <script src="assets/js/index.js"></script>
+    <footer>
+        <p>&copy; 2025 Zenethis. All rights reserved.</p>
+</body>
+</html>

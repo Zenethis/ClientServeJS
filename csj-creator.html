@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClientServeJS - CSJ Creator</title>
+    <script src="clientserve.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="assets/styles/csj-creator.css">
+</head>
+<body>
+    <header>
+        <h1>ClientServeJS - CSJ Creator</h1>
+        <p>Create encrypted CSJ archives for ClientServeJS</p>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title">Create CSJ Archive</h2>
+            
+            <div class="note">
+                <p>CSJ (ClientServeJS) archives are encrypted files that can be loaded directly by ClientServeJS.</p>
+                <p>They provide better security for your content compared to regular ZIP files.</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="archive-source">Archive Source</label>
+                <select id="archive-source">
+                    <option value="zip">ZIP File</option>
+                    <option value="folder">Folder Upload</option>
+                </select>
+            </div>
+            
+            <div id="zip-input" class="form-group">
+                <label for="zip-file">ZIP File</label>
+                <div class="file-input-container">
+                    <div class="file-input-button">Choose ZIP File</div>
+                    <input type="file" id="zip-file" accept=".zip">
+                </div>
+                <div class="file-name" id="zip-file-name">No file chosen</div>
+            </div>
+            
+            <div id="folder-input" class="form-group" style="display: none;">
+                <label for="folder-files">Folder Files</label>
+                <div class="file-input-container">
+                    <div class="file-input-button">Choose Files</div>
+                    <input type="file" id="folder-files" multiple webkitdirectory directory>
+                </div>
+                <div class="file-name" id="folder-files-count">No files chosen</div>
+                <div class="file-list" id="folder-files-list"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Encryption Password (optional)</label>
+                <input type="password" id="password" placeholder="Leave blank for default password">
+            </div>
+            
+            <div class="form-group">
+                <label for="metadata">Metadata (JSON)</label>
+                <textarea id="metadata" placeholder='{"name": "My App", "version": "1.0.0", "author": "Your Name"}'></textarea>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="status" id="status">Ready to create CSJ archive</div>
+            <div class="error" id="error"></div>
+            
+            <button id="create-button">Create CSJ Archive</button>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title">About CSJ Format</h2>
+            <p>The CSJ format is a secure way to distribute web applications and content for use with ClientServeJS.</p>
+            <p>Key features:</p>
+            <ul>
+                <li>AES-GCM encryption for secure content protection</li>
+                <li>Preserves folder structure and file metadata</li>
+                <li>Directly loadable by ClientServeJS</li>
+                <li>Supports all file types that ClientServeJS supports</li>
+                <li>Can include custom metadata for your application</li>
+            </ul>
+            <p>To use a CSJ file with ClientServeJS:</p>
+            <pre><code>const clientServe = new ClientServe({
+    persistFiles: true,
+    csjPassword: "your-password" // Optional
+});
+
+await clientServe.loadFromUrl("your-file.csj", "csj");
+clientServe.launch();</code></pre>
+        </div>
+    </div>
+    
+    <script src="assets/js/csj-creator.js"></script>
+</body>
+</html>
